@@ -1,2 +1,2 @@
 # ImageLoader
-一个简单的图片加载框架
+一个简单的Android图片加载框架

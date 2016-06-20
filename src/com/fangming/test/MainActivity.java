@@ -27,6 +27,7 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		mImageLoader = ImageLoader.getInstance();
+		mImageLoader.setIsUseSdCache(true);
 		initView();
 	}
 

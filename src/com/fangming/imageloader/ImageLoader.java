@@ -9,14 +9,12 @@ import java.util.concurrent.Executors;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Handler;
-import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
-import android.util.LruCache;
 import android.widget.ImageView;
 
 /**
- * @describe 图片加载类
+ * @describe 图片加载类（使用了3级缓存）
  * @author fangming
  * @CreateTime 2016年6月17日上午9:55:06
  * @version 1.0.0
@@ -24,12 +22,17 @@ import android.widget.ImageView;
 public class ImageLoader {
 	private String Tag=ImageLoader.class.getName();
 	public static ImageLoader _instance;
+	//内存缓存
+	ImageCache mImageCache=new ImageCache();
+	//文件缓存
+	DiskCache mDiskCache=new DiskCache();
+	
+	Boolean useSdCache=false;
 
 	/**
 	 * 线程池
 	 */
 	ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-	LruCache<String, Bitmap> iImageCache;
 	
 	public static ImageLoader getInstance(){
 		if(_instance==null){
@@ -37,12 +40,7 @@ public class ImageLoader {
 		}
 		return _instance;
 	}
-
-	public ImageLoader() {
-		initImageCache();
-	}
-
-
+	
 	/**
 	 * @describe:down image
 	 * @param imageUrl
@@ -63,24 +61,6 @@ public class ImageLoader {
 		}
 		return bitmap;
 	}
-
-	
-	/**
-	 * @describe:图片缓存
-	 */
-	public void initImageCache(){
-		//计算可使用的最大内存
-		int maxMemory=(int) ((Runtime.getRuntime().maxMemory())/1024);
-		//取四分之一的可用内存作为缓存
-		int cacheSize=maxMemory/4;
-		iImageCache=new LruCache<String, Bitmap>(cacheSize){
-			@Override
-			protected int sizeOf(String key, Bitmap bitmap) {
-				return bitmap.getRowBytes() * bitmap.getHeight() /1024;
-			}
-		};
-		
-	}
 	
 	/**
 	 * @describe:显示图片
@@ -93,7 +73,27 @@ public class ImageLoader {
 
 			@Override
 			public void run() {
-				Bitmap bitmap = downLoadImage(imageUrl);
+				//1.先从缓存中拿
+				Bitmap bitmap=mImageCache.get(imageUrl);
+				//2.缓存中没有时，从sd卡中取
+				if(bitmap==null && useSdCache){
+					try {
+						bitmap=mDiskCache.get(imageUrl);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					if(bitmap!=null){
+						mImageCache.put(imageUrl, bitmap);	
+					}
+				}
+				//3.缓存中没有时，从服务器上拿
+				if (bitmap == null) {
+					bitmap = downLoadImage(imageUrl);
+					mImageCache.put(imageUrl, bitmap);
+					if(useSdCache){
+						mDiskCache.put(imageUrl, bitmap);
+					}
+				}
 				if (bitmap == null) {
 					return;
 				}
@@ -102,10 +102,12 @@ public class ImageLoader {
 					msg.obj = bitmap;
 					handler.sendMessage(msg);
 				}
-				iImageCache.put(imageUrl, bitmap);
 			}
 		});
 
 	}
 
+	public void setIsUseSdCache(Boolean isuse){
+		useSdCache=isuse;
+	}
 }

@@ -1,5 +1,7 @@
 package com.fangming.test;
 
+import com.fangming.imageloader.DiskCache;
+import com.fangming.imageloader.DoubleCache;
 import com.fangming.imageloader.ImageLoader;
 import com.fangming.imageloader.R;
 
@@ -8,8 +10,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -26,8 +26,8 @@ public class MainActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		mImageLoader = ImageLoader.getInstance();
-		mImageLoader.setIsUseSdCache(true);
+		mImageLoader = new ImageLoader();
+		mImageLoader.setmImageCache(new DoubleCache());
 		initView();
 	}
 

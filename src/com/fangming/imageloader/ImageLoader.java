@@ -20,27 +20,23 @@ import android.widget.ImageView;
  * @version 1.0.0
  */
 public class ImageLoader {
-	private String Tag=ImageLoader.class.getName();
-	public static ImageLoader _instance;
-	//内存缓存
-	ImageCache mImageCache=new ImageCache();
-	//文件缓存
-	DiskCache mDiskCache=new DiskCache();
-	
-	Boolean useSdCache=false;
+	private String Tag = ImageLoader.class.getName();
+	// 图片缓存
+	ImageCache mImageCache = new MemoryCache();
 
 	/**
 	 * 线程池
 	 */
 	ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-	
-	public static ImageLoader getInstance(){
-		if(_instance==null){
-			_instance=new ImageLoader();
-		}
-		return _instance;
+
+	/**
+	 * @describe:注入缓存实现
+	 * @param mImageCache
+	 */
+	public void setmImageCache(ImageCache mImageCache) {
+		this.mImageCache = mImageCache;
 	}
-	
+
 	/**
 	 * @describe:down image
 	 * @param imageUrl
@@ -56,58 +52,50 @@ public class ImageLoader {
 			mUrlConnection.disconnect();
 		} catch (IOException e) {
 			e.printStackTrace();
-		}catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return bitmap;
 	}
-	
+
 	/**
 	 * @describe:显示图片
 	 * @param imageUrl图片地址
 	 * @param imageView控件
 	 */
-	public void displayImage(final String imageUrl, final ImageView imageView,final Handler handler) {
+	public void displayImage(final String imageUrl, final ImageView imageView, final Handler handler) {
+		// 1.先从缓存中拿
+		Bitmap bitmap = mImageCache.get(imageUrl);
+		if (bitmap != null) {
+			imageView.setImageBitmap(bitmap);
+			return;
+		}
+		// 2.缓存中没有时，从服务器上拿
+		submitLoadRequest(imageUrl, imageView, handler);
+	}
+
+	/**
+	 * @describe:http提交图片请求
+	 * @param imageUrl图片地址
+	 * @param imageView控件
+	 */
+	public void submitLoadRequest(final String imageUrl, final ImageView imageView, final Handler handler) {
 		imageView.setTag(imageUrl);
 		executorService.submit(new Runnable() {
 
 			@Override
 			public void run() {
-				//1.先从缓存中拿
-				Bitmap bitmap=mImageCache.get(imageUrl);
-				//2.缓存中没有时，从sd卡中取
-				if(bitmap==null && useSdCache){
-					try {
-						bitmap=mDiskCache.get(imageUrl);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-					if(bitmap!=null){
-						mImageCache.put(imageUrl, bitmap);	
-					}
-				}
-				//3.缓存中没有时，从服务器上拿
-				if (bitmap == null) {
-					bitmap = downLoadImage(imageUrl);
-					mImageCache.put(imageUrl, bitmap);
-					if(useSdCache){
-						mDiskCache.put(imageUrl, bitmap);
-					}
-				}
+				Bitmap bitmap = downLoadImage(imageUrl);
 				if (bitmap == null) {
 					return;
 				}
+				mImageCache.put(imageUrl, bitmap);
 				if (imageView.getTag().equals(imageUrl)) {
-					Message msg = new Message(); 
+					Message msg = new Message();
 					msg.obj = bitmap;
 					handler.sendMessage(msg);
 				}
 			}
 		});
-
-	}
-
-	public void setIsUseSdCache(Boolean isuse){
-		useSdCache=isuse;
 	}
 }

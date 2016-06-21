@@ -70,7 +70,12 @@ public class FileUtil {
 	}
 
 	public Bitmap getBitmap(String fileDir,String picName){
-		return BitmapFactory.decodeFile(fileDir+picName.replace("/", ""));
+		String picna=picName.replace("/", "");
+		File f = new File(SDPATH, picna);
+		if (!f.exists()) {
+			return null;
+		}
+		return BitmapFactory.decodeFile(fileDir+picna);
 	}
 	
 	/**

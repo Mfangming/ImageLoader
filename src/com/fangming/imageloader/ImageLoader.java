@@ -22,7 +22,7 @@ import android.widget.ImageView;
 public class ImageLoader {
 	private String Tag = ImageLoader.class.getName();
 	// 图片缓存
-	ImageCache mImageCache = new MemoryCache();
+	ImageCache mImageCache = new DoubleCache();
 
 	/**
 	 * 线程池

@@ -1,6 +1,5 @@
 package com.fangming.test;
 
-import com.fangming.imageloader.DiskCache;
 import com.fangming.imageloader.DoubleCache;
 import com.fangming.imageloader.ImageLoader;
 import com.fangming.imageloader.R;

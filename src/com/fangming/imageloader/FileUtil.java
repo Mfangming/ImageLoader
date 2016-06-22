@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import com.fangming.utils.CloseUtils;
+
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
@@ -45,6 +47,7 @@ public class FileUtil {
 	 */
 	public void saveBitmap(String fileDir,Bitmap bitmap,String picName){
 		String picna=picName.replace("/", "");
+		FileOutputStream out=null;
 		try {
 			 File file = new File(fileDir);
 		        if (!file.exists()) {  
@@ -58,14 +61,13 @@ public class FileUtil {
 			if (f.exists()) {
 				f.delete();
 			}
-			FileOutputStream out = new FileOutputStream(SDPATH+picna);
+			out= new FileOutputStream(SDPATH+picna);
 			bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
-			out.flush();
-			out.close();
+//			out.flush();//字节流不用刷新到缓存
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
+		}finally{
+			CloseUtils.closeQuietly(out);
 		}
 	}
 

@@ -29,6 +29,20 @@ public class ImageLoader {
 	 */
 	ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
+	
+	private ImageLoader(){
+		
+	} 
+	
+	public static ImageLoader getInstance(){
+		return ImageLoaderHolder.instance;
+	}
+	
+	private static class ImageLoaderHolder{
+		private static final ImageLoader instance=new ImageLoader();
+	}
+	
+	
 	/**
 	 * @describe:注入缓存实现
 	 * @param mImageCache

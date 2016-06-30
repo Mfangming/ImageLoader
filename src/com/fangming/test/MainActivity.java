@@ -5,6 +5,7 @@ import com.fangming.imageloader.ImageLoader;
 import com.fangming.imageloader.R;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -25,9 +26,10 @@ public class MainActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		mImageLoader = new ImageLoader();
+		mImageLoader = ImageLoader.getInstance();
 		mImageLoader.setmImageCache(new DoubleCache());
 		initView();
+		AlertDialog.Builder builder=new AlertDialog.Builder(this);
 	}
 
 	@Override

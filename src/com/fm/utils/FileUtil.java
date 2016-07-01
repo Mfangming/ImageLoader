@@ -1,4 +1,4 @@
-package com.fangming.imageloader;
+package com.fm.utils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -6,8 +6,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
-import com.fangming.utils.CloseUtils;
 
 import android.content.Context;
 import android.content.res.AssetManager;

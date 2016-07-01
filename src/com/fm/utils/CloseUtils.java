@@ -1,4 +1,4 @@
-package com.fangming.utils;
+package com.fm.utils;
 
 import java.io.Closeable;
 import java.io.IOException;

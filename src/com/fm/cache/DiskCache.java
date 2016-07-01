@@ -1,4 +1,6 @@
-package com.fangming.imageloader;
+package com.fm.cache;
+
+import com.fm.utils.FileUtil;
 
 import android.graphics.Bitmap;
 

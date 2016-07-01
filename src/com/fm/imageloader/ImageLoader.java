@@ -1,10 +1,12 @@
-package com.fangming.imageloader;
+package com.fm.imageloader;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import com.fm.config.ImageLoaderConfiguration;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;

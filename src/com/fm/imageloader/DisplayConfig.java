@@ -1,4 +1,4 @@
-package com.fangming.imageloader;
+package com.fm.imageloader;
 
 public class DisplayConfig {
 	/**

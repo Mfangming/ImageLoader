@@ -1,7 +1,11 @@
-package com.fangming.imageloader;
+package com.fm.config;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import com.fm.cache.ImageCache;
+import com.fm.cache.MemoryCache;
+import com.fm.imageloader.DisplayConfig;
 
 /**
  * @describe 类似build模式，使用户可以链式调用

@@ -1,9 +1,9 @@
-package com.fangming.test;
+package com.fm.test;
 
-import com.fangming.imageloader.DoubleCache;
-import com.fangming.imageloader.ImageLoader;
-import com.fangming.imageloader.ImageLoaderConfiguration;
 import com.fangming.imageloader.R;
+import com.fm.cache.DoubleCache;
+import com.fm.config.ImageLoaderConfiguration;
+import com.fm.imageloader.ImageLoader;
 
 import android.app.Activity;
 import android.app.AlertDialog;

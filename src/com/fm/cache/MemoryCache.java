@@ -1,4 +1,4 @@
-package com.fangming.imageloader;
+package com.fm.cache;
 
 import android.graphics.Bitmap;
 import android.util.LruCache;

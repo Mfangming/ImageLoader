@@ -21,34 +21,47 @@ import android.widget.ImageView;
  */
 public class ImageLoader {
 	private String Tag = ImageLoader.class.getName();
-	// 图片缓存
-	ImageCache mImageCache = new DoubleCache();
 
 	/**
-	 * 线程池
+	 * 图片加载配置对象
 	 */
-	ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+	private ImageLoaderConfiguration mConfig;
 
-	
-	private ImageLoader(){
-		
-	} 
-	
-	public static ImageLoader getInstance(){
+	private ImageLoader() {
+	}
+
+	/**
+	 * @describe:静态内部类单例模式
+	 * @return
+	 */
+	public static ImageLoader getInstance() {
 		return ImageLoaderHolder.instance;
 	}
-	
-	private static class ImageLoaderHolder{
-		private static final ImageLoader instance=new ImageLoader();
+
+	private static class ImageLoaderHolder {
+		private static final ImageLoader instance = new ImageLoader();
 	}
-	
-	
+
 	/**
-	 * @describe:注入缓存实现
-	 * @param mImageCache
+	 * @describe:检验配置
 	 */
-	public void setmImageCache(ImageCache mImageCache) {
-		this.mImageCache = mImageCache;
+	private void checkConfig() {
+		if (mConfig == null) {
+			throw new RuntimeException(
+					"The config of SimpleImageLoader is Null, please call the init(ImageLoaderConfig config) method to initialize");
+		}
+		// if (mConfig.loadPolicy == null) {
+		// mConfig.loadPolicy = new SerialPolicy();
+		// }
+	}
+
+	/**
+	 * @describe:初始化配置
+	 * @param mCinfig
+	 */
+	public void init(ImageLoaderConfiguration mCinfig) {
+		this.mConfig = mCinfig;
+		checkConfig();
 	}
 
 	/**
@@ -79,7 +92,7 @@ public class ImageLoader {
 	 */
 	public void displayImage(final String imageUrl, final ImageView imageView, final Handler handler) {
 		// 1.先从缓存中拿
-		Bitmap bitmap = mImageCache.get(imageUrl);
+		Bitmap bitmap = mConfig.mCache.get(imageUrl);
 		if (bitmap != null) {
 			imageView.setImageBitmap(bitmap);
 			return;
@@ -94,18 +107,18 @@ public class ImageLoader {
 	 * @param imageView控件
 	 */
 	public void submitLoadRequest(final String imageUrl, final ImageView imageView, final Handler handler) {
+		imageView.setImageResource(mConfig.dConfig.lodingid);
 		imageView.setTag(imageUrl);
-		executorService.submit(new Runnable() {
+		mConfig.executorService.submit(new Runnable() {
 
 			@Override
 			public void run() {
 				Bitmap bitmap = downLoadImage(imageUrl);
-				if (bitmap == null) {
-					return;
-				}
-				mImageCache.put(imageUrl, bitmap);
 				if (imageView.getTag().equals(imageUrl)) {
 					Message msg = new Message();
+					if (bitmap != null) {
+						mConfig.mCache.put(imageUrl, bitmap);
+					}
 					msg.obj = bitmap;
 					handler.sendMessage(msg);
 				}
